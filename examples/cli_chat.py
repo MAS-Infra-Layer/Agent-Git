@@ -28,6 +28,7 @@ from agentgit.database.repositories.external_session_repository import ExternalS
 from agentgit.database.repositories.internal_session_repository import InternalSessionRepository
 from agentgit.database.repositories.checkpoint_repository import CheckpointRepository
 from agentgit.database.db_config import get_database_path
+from agentgit.checkpoints.diff import CheckpointDiffer, DiffRenderer
 
 
 class Color:
