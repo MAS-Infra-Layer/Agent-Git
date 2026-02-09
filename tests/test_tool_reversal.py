@@ -19,13 +19,13 @@ from langchain_core.tools import tool
 # Suppress Pydantic V2 deprecation warnings from LangChain
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*__fields__.*")
 
-from src.agents.rollback_agent import RollbackAgent
-from src.checkpoints.checkpoint import Checkpoint
-from src.database.repositories.checkpoint_repository import CheckpointRepository
-from src.database.repositories.internal_session_repository import InternalSessionRepository
-from src.database.repositories.external_session_repository import ExternalSessionRepository
-from src.database.repositories.user_repository import UserRepository
-from src.sessions.external_session import ExternalSession
+from src.agentgit.agents.rollback_agent import RollbackAgent
+from src.agentgit.checkpoints.checkpoint import Checkpoint
+from src.agentgit.database.repositories.checkpoint_repository import CheckpointRepository
+from src.agentgit.database.repositories.internal_session_repository import InternalSessionRepository
+from src.agentgit.database.repositories.external_session_repository import ExternalSessionRepository
+from src.agentgit.database.repositories.user_repository import UserRepository
+from src.agentgit.sessions.external_session import ExternalSession
 
 
 class TestToolReversal(unittest.TestCase):

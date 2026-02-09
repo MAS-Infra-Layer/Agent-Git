@@ -16,15 +16,15 @@ from langchain_openai import ChatOpenAI
 # Suppress Pydantic V2 deprecation warnings from LangChain
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*__fields__.*")
 
-from src.sessions.external_session import ExternalSession
-from src.sessions.internal_session import InternalSession
-from src.database.repositories.external_session_repository import ExternalSessionRepository
-from src.database.repositories.internal_session_repository import InternalSessionRepository
-from src.database.repositories.checkpoint_repository import CheckpointRepository
-from src.database.repositories.user_repository import UserRepository
-from src.auth.user import User
-from src.agents.agent_service import AgentService
-from src.checkpoints.checkpoint import Checkpoint
+from src.agentgit.sessions.external_session import ExternalSession
+from src.agentgit.sessions.internal_session import InternalSession
+from src.agentgit.database.repositories.external_session_repository import ExternalSessionRepository
+from src.agentgit.database.repositories.internal_session_repository import InternalSessionRepository
+from src.agentgit.database.repositories.checkpoint_repository import CheckpointRepository
+from src.agentgit.database.repositories.user_repository import UserRepository
+from src.agentgit.auth.user import User
+from src.agentgit.agents.agent_service import AgentService
+from src.agentgit.checkpoints.checkpoint import Checkpoint
 
 
 class TestSessionManagement(unittest.TestCase):
