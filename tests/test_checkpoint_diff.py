@@ -1,11 +1,14 @@
 """Tests for checkpoint diff functionality."""
 
-import pytest
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 from datetime import datetime
 
-from src.agentgit.checkpoints.checkpoint import Checkpoint
-from src.agentgit.checkpoints.diff import (
+from agentgit.checkpoints.checkpoint import Checkpoint
+from agentgit.checkpoints.diff import (
     compare_checkpoints,
     format_diff_report,
     StateChange,
@@ -16,6 +19,8 @@ from src.agentgit.checkpoints.diff import (
     _compare_dicts,
     _compare_tool_invocations,
 )
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class TestFlattenDict:
