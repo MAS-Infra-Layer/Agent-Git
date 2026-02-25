@@ -29,6 +29,8 @@ from agentgit.database.repositories.internal_session_repository import InternalS
 from agentgit.database.repositories.checkpoint_repository import CheckpointRepository
 from agentgit.database.db_config import get_database_path
 from agentgit.checkpoints.diff import CheckpointDiffer, DiffRenderer
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class Color:
@@ -90,12 +92,28 @@ class CLIChatApp:
         self._ensure_database_path()
     
     def _ensure_database_path(self):
-        """Ensure the database directory exists."""
+        """Ensure the database configuration is valid.
+
+        - For SQLite (default): ensure the directory for the DB file exists.
+        - For PostgreSQL (DATABASE=postgres): validate and print the DSN.
+        """
         try:
+            db_type = os.getenv("DATABASE", "sqlite").strip().lower()
             db_path = get_database_path()
-            db_dir = os.path.dirname(db_path)
-            os.makedirs(db_dir, exist_ok=True)
-            print(f"{Color.DIM}Database location: {db_path}{Color.ENDC}")
+
+            if db_type == "postgres":
+                # postgresql://user:password@host:port/dbname
+                if "://" not in db_path:
+                    raise ValueError(
+                        f"Invalid PostgreSQL DATABASE_URL: {db_path!r}. "
+                    )
+                print(f"{Color.DIM}PostgreSQL database DSN: {db_path}{Color.ENDC}")
+            else:
+                # SQLite: db_path is a filesystem path
+                db_dir = os.path.dirname(db_path)
+                if db_dir:
+                    os.makedirs(db_dir, exist_ok=True)
+                print(f"{Color.DIM}Database location: {db_path}{Color.ENDC}")
         except Exception as e:
             print(f"{Color.RED}Failed to initialize database path: {e}{Color.ENDC}")
             sys.exit(1)
