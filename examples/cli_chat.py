@@ -28,6 +28,7 @@ from agentgit.database.repositories.external_session_repository import ExternalS
 from agentgit.database.repositories.internal_session_repository import InternalSessionRepository
 from agentgit.database.repositories.checkpoint_repository import CheckpointRepository
 from agentgit.database.db_config import get_database_path
+from agentgit.checkpoints.diff import CheckpointDiffer, DiffRenderer
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -67,7 +68,8 @@ class MenuChoice(Enum):
     ROLLBACK = "4"
     VIEW_HISTORY = "5"
     BRANCH_INFO = "6"
-    BACK_TO_MAIN = "7"
+    DIFF_CHECKPOINTS = "7"
+    BACK_TO_MAIN = "8"
 
 
 class CLIChatApp:
@@ -343,6 +345,7 @@ class CLIChatApp:
                 (MenuChoice.ROLLBACK.value, "Rollback to checkpoint"),
                 (MenuChoice.VIEW_HISTORY.value, "View conversation history"),
                 (MenuChoice.BRANCH_INFO.value, "View branch information"),
+                (MenuChoice.DIFF_CHECKPOINTS.value, "Compare checkpoints (diff)"),
                 (MenuChoice.BACK_TO_MAIN.value, "Back to main menu")
             ])
             
@@ -360,6 +363,8 @@ class CLIChatApp:
                 self.view_history()
             elif choice == MenuChoice.BRANCH_INFO.value:
                 self.view_branch_info()
+            elif choice == MenuChoice.DIFF_CHECKPOINTS.value:
+                self.diff_checkpoints()
             elif choice == MenuChoice.BACK_TO_MAIN.value:
                 break
             else:
@@ -649,6 +654,51 @@ class CLIChatApp:
                 self.print_error(message)
         else:
             self.print_info("No changes made")
+    
+    def diff_checkpoints(self):
+        """Compare two checkpoints and show differences."""
+        if not self.current_agent.internal_session:
+            self.print_warning("No internal session active")
+            return
+        
+        checkpoints = self.checkpoint_repo.get_by_internal_session(
+            self.current_agent.internal_session.id
+        )
+        
+        if len(checkpoints) < 2:
+            self.print_warning("Need at least 2 checkpoints to compare")
+            return
+        
+        # Display checkpoints for selection
+        print(f"\n{Color.BOLD}Available Checkpoints:{Color.ENDC}")
+        for i, cp in enumerate(checkpoints):
+            name = cp.checkpoint_name or f"Checkpoint {cp.id}"
+            print(f"  {i}: {Color.BOLD}[{cp.id}]{Color.ENDC} {name}")
+        
+        # Get checkpoint IDs
+        id_a_str = self.get_input("Enter first checkpoint index")
+        id_b_str = self.get_input("Enter second checkpoint index")
+        
+        try:
+            id_a = int(id_a_str)
+            id_b = int(id_b_str)
+            
+            if id_a < 0 or id_a >= len(checkpoints) or id_b < 0 or id_b >= len(checkpoints):
+                self.print_error("Invalid checkpoint indices")
+                return
+            
+            checkpoint_a = checkpoints[id_a]
+            checkpoint_b = checkpoints[id_b]
+            
+            # Perform diff
+            diff_result = CheckpointDiffer.diff(checkpoint_a, checkpoint_b)
+            
+            # Render and display
+            output = DiffRenderer.render_text(diff_result, use_color=True)
+            print(f"\n{output}\n")
+            
+        except ValueError:
+            self.print_error("Please enter valid checkpoint indices")
     
     def list_sessions(self):
         """List all user sessions."""
